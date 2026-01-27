@@ -1,0 +1,29 @@
+---
+// Footer component
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="py-12 bg-navy border-t border-white/5">
+  <div class="container max-w-6xl mx-auto px-6">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3">
+        <img src="/logo.svg" alt="CTRL FLW" class="h-6 w-6" />
+        <span class="text-lg font-bold gradient-text">CTRL FLW</span>
+      </a>
+
+      <!-- Links -->
+      <div class="flex items-center gap-8 text-sm text-gray-400">
+        <a href="#services" class="hover:text-white transition-colors">Services</a>
+        <a href="#process" class="hover:text-white transition-colors">Process</a>
+        <a href="#results" class="hover:text-white transition-colors">Results</a>
+        <a href="#book" class="hover:text-purple transition-colors">Book a Call</a>
+      </div>
+
+      <!-- Copyright -->
+      <p class="text-gray-500 text-sm">
+        &copy; {currentYear} CTRL FLW. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>

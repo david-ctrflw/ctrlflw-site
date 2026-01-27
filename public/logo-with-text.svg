@@ -1,0 +1,31 @@
+<svg width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="purpleBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="purpleBlueHorizontal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Logo mark - purple to blue gradient -->
+  <g>
+    <!-- Purple-blue gradient blades -->
+    <g fill="url(#purpleBlue)">
+      <ellipse cx="60" cy="30" rx="14" ry="28" transform="rotate(0 60 60)"/>
+      <ellipse cx="60" cy="30" rx="14" ry="28" transform="rotate(120 60 60)"/>
+      <ellipse cx="60" cy="30" rx="14" ry="28" transform="rotate(240 60 60)"/>
+    </g>
+
+    <!-- White center circle -->
+    <circle cx="60" cy="60" r="16" fill="white"/>
+
+    <!-- Arc -->
+    <path d="M 44 58 Q 60 48, 76 58" stroke="url(#purpleBlue)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- CTRL FLW text - black fill with gradient stroke outline -->
+  <text x="60" y="145" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="18" fill="#0a0a0f" stroke="url(#purpleBlueHorizontal)" stroke-width="0.5">CTRL FLW</text>
+</svg>

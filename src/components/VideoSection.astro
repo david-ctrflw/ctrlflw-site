@@ -1,0 +1,33 @@
+---
+// Video section component
+---
+
+<section id="video" class="relative py-24 bg-navy-light">
+  <div class="container max-w-5xl mx-auto px-6">
+    <!-- Section header -->
+    <div class="text-center mb-12 fade-up">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        See How It <span class="gradient-text">Works</span>
+      </h2>
+      <p class="text-gray-400 max-w-2xl mx-auto">
+        One of our systems in detail: AI leadgen that books qualified sales calls.
+      </p>
+    </div>
+
+    <!-- Video embed container -->
+    <div class="relative rounded-2xl overflow-hidden glow fade-up">
+      <!-- Wistia Video Embed -->
+      <script src="https://fast.wistia.com/player.js" async></script>
+      <script src="https://fast.wistia.com/embed/9o315vt1qx.js" async type="module"></script>
+      <style>
+        wistia-player[media-id='9o315vt1qx']:not(:defined) {
+          background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/9o315vt1qx/swatch');
+          display: block;
+          filter: blur(5px);
+          padding-top: 56.25%;
+        }
+      </style>
+      <wistia-player media-id="9o315vt1qx" aspect="1.7777777777777777"></wistia-player>
+    </div>
+  </div>
+</section>

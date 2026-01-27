@@ -1,0 +1,70 @@
+---
+// Testimonials / Social proof section
+
+const testimonials = [
+  {
+    quote: "20 opportunities with YouTube creators in 1 week—including a 250K+ subscriber channel ready to feature Kosmik",
+    name: "Paul Rony",
+    role: "Founder @ Kosmik.app",
+    metric: "20",
+    metricLabel: "Opportunities in 1 Week",
+    image: "/clientHeadshot/paul_headshot.png"
+  },
+  {
+    quote: "$215K in pipeline generated in 60 days—from zero outbound motion to meetings with enterprise hotel groups like Club Quarters",
+    name: "Doug Schuessler",
+    role: "CEO @ Safara360",
+    metric: "$215K",
+    metricLabel: "Pipeline in 60 Days",
+    image: "/clientHeadshot/doug_headshot.png"
+  },
+  {
+    quote: "Previous outbound attempts got crickets. We rebuilt their approach from the ground up—hyper-targeting, offer reframing, dynamic copy—and engagement jumped 2X in weeks",
+    name: "Michael Strong",
+    role: "CEO @ Mivarii",
+    metric: "2X",
+    metricLabel: "Engagement Increase",
+    image: "/clientHeadshot/michael_headshot.png"
+  }
+];
+---
+
+<section id="results" class="py-24 bg-navy">
+  <div class="container max-w-6xl mx-auto px-6">
+    <!-- Section header -->
+    <div class="text-center mb-16 fade-up">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        Real <span class="gradient-text">Results</span>
+      </h2>
+      <p class="text-gray-400 max-w-2xl mx-auto">
+        Here's what we've delivered for our clients.
+      </p>
+    </div>
+
+    <!-- Testimonials grid -->
+    <div class="grid md:grid-cols-3 gap-8">
+      {testimonials.map((testimonial) => (
+        <div class="card flex flex-col h-full">
+          <!-- Metric highlight -->
+          <div class="mb-6 text-center">
+            <span class="text-4xl font-bold gradient-text">{testimonial.metric}</span>
+            <span class="block text-sm text-gray-500 mt-1">{testimonial.metricLabel}</span>
+          </div>
+
+          <!-- Description -->
+          <p class="text-gray-300 mb-6 leading-relaxed flex-grow">{testimonial.quote}</p>
+
+          <!-- Attribution -->
+          <div class="flex items-center gap-3 mt-auto">
+            <img src={testimonial.image} alt={testimonial.name} class="w-10 h-10 rounded-full object-cover" />
+            <div>
+              <p class="font-medium text-sm">{testimonial.name}</p>
+              <p class="text-gray-500 text-xs">{testimonial.role}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>

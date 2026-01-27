@@ -1,0 +1,58 @@
+---
+// Process section component
+
+const steps = [
+  {
+    number: "01",
+    title: "Discovery Call",
+    description: "We learn about your business, challenges, and goals. No pitch, just conversation."
+  },
+  {
+    number: "02",
+    title: "Solution Design",
+    description: "We map out the exact systems you need and how they'll integrate with your existing tools."
+  },
+  {
+    number: "03",
+    title: "Build & Deploy",
+    description: "We build your custom solution, test it thoroughly, and deploy it into your workflow."
+  },
+  {
+    number: "04",
+    title: "Optimize & Scale",
+    description: "We monitor performance, optimize for results, and scale what's working."
+  }
+];
+---
+
+<section id="process" class="py-24 bg-navy-light">
+  <div class="container max-w-6xl mx-auto px-6">
+    <!-- Section header -->
+    <div class="text-center mb-16 fade-up">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        How We <span class="gradient-text">Work</span>
+      </h2>
+      <p class="text-gray-400 max-w-2xl mx-auto">
+        A simple, proven process that gets you from idea to live system.
+      </p>
+    </div>
+
+    <!-- Process steps -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {steps.map((step, i) => (
+        <div class="relative">
+          <!-- Connector line (not on last item) -->
+          {i < steps.length - 1 && (
+            <div class="hidden lg:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-teal/50 to-transparent"></div>
+          )}
+
+          <div class="card text-center lg:text-left">
+            <span class="text-5xl font-bold gradient-text opacity-50">{step.number}</span>
+            <h3 class="text-xl font-semibold mt-4 mb-2">{step.title}</h3>
+            <p class="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

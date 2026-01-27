@@ -1,0 +1,48 @@
+---
+// Services section component
+
+const services = [
+  {
+    title: "Sales Systems",
+    description: "Automated outbound that finds, qualifies, and books meetings with your ideal customers. No more manual prospecting.",
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>`
+  },
+  {
+    title: "Operations Automation",
+    description: "Eliminate repetitive tasks. We build systems that handle data processing, reporting, and workflows automatically.",
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>`
+  },
+  {
+    title: "Custom AI Projects",
+    description: "Have a specific challenge? We design and build custom AI solutions tailored to your unique business needs.",
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>`
+  }
+];
+---
+
+<section id="services" class="py-24 bg-navy">
+  <div class="container max-w-6xl mx-auto px-6">
+    <!-- Section header -->
+    <div class="text-center mb-16 fade-up">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        What We <span class="gradient-text">Build</span>
+      </h2>
+      <p class="text-gray-400 max-w-2xl mx-auto">
+        From automated sales pipelines to custom AI solutions, we build systems that work while you sleep.
+      </p>
+    </div>
+
+    <!-- Services grid -->
+    <div class="grid md:grid-cols-3 gap-8">
+      {services.map((service) => (
+        <div class="card group text-center">
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-r from-purple/20 to-blue/20 flex items-center justify-center mb-6 text-purple group-hover:from-teal/30 group-hover:to-cyan/30 transition-all mx-auto">
+            <Fragment set:html={service.icon} />
+          </div>
+          <h3 class="text-xl font-semibold mb-3">{service.title}</h3>
+          <p class="text-gray-400 leading-relaxed">{service.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

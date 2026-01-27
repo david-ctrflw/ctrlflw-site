@@ -1,0 +1,66 @@
+---
+// Hero section component
+---
+
+<section class="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden">
+  <!-- Background gradient effect -->
+  <div class="absolute inset-0 bg-gradient-to-b from-navy via-navy to-navy-light"></div>
+
+  <!-- Animated gradient orb -->
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple/20 to-blue/20 blur-3xl opacity-50"></div>
+
+  <div class="container relative z-10 text-center max-w-4xl mx-auto px-6">
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 fade-up">
+      <span class="w-2 h-2 rounded-full bg-purple animate-pulse"></span>
+      <span class="text-sm text-gray-300">AI-Powered Growth Systems</span>
+    </div>
+
+    <!-- Main headline -->
+    <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 fade-up">
+      Scale Your Business with
+      <span class="gradient-text"> Agentic Systems</span>
+    </h1>
+
+    <!-- Subheadline -->
+    <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 fade-up">
+      We build custom AI solutions that automate your sales, operations, and growth.
+      Stop doing manual work. Start scaling.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 fade-up">
+      <a href="https://cal.com/david-mendoza-u7pzyu/30min?overlayCalendar=true" target="_blank" rel="noopener noreferrer" class="btn-primary text-lg px-8 py-4">
+        Book Strategy Call
+      </a>
+      <a href="#video" class="btn-secondary text-lg px-8 py-4">
+        Watch How It Works
+      </a>
+    </div>
+
+    <!-- Trusted By Text -->
+    <p class="mt-20 text-sm text-gray-500 fade-up">Trusted by leading B2B companies worldwide</p>
+  </div>
+
+  <!-- Logo Carousel (full width, outside container) -->
+  <div class="relative mt-6 w-full max-w-6xl overflow-hidden">
+    <!-- Gradient fade masks -->
+    <div class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-navy to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-navy to-transparent z-10 pointer-events-none"></div>
+
+    <!-- Scrolling track -->
+    <div class="logo-carousel flex items-center gap-16">
+      <img src="/clientLogos/kosmikLogo_bw.png" alt="Kosmik" class="h-10 opacity-80" />
+      <img src="/clientLogos/safaraLogo_bw.png" alt="Safara" class="h-10 opacity-80" />
+      <img src="/clientLogos/mivariiLogo_bw.png" alt="Mivarii" class="h-10 opacity-80" />
+      <img src="/clientLogos/rapidiousLogo_bw.png" alt="Rapidious" class="h-10 opacity-80" />
+      <img src="/clientLogos/toureLogo_bw.png" alt="Toure Marketing" class="h-10 opacity-80" />
+      <!-- Duplicate set for seamless loop -->
+      <img src="/clientLogos/kosmikLogo_bw.png" alt="Kosmik" class="h-10 opacity-80" />
+      <img src="/clientLogos/safaraLogo_bw.png" alt="Safara" class="h-10 opacity-80" />
+      <img src="/clientLogos/mivariiLogo_bw.png" alt="Mivarii" class="h-10 opacity-80" />
+      <img src="/clientLogos/rapidiousLogo_bw.png" alt="Rapidious" class="h-10 opacity-80" />
+      <img src="/clientLogos/toureLogo_bw.png" alt="Toure Marketing" class="h-10 opacity-80" />
+    </div>
+  </div>
+</section>
