@@ -31,22 +31,39 @@ const { title, description = "AI-powered systems that scale your business" } = A
 
       gsap.registerPlugin(ScrollTrigger);
 
-      // Animate all fade-up elements on scroll
+      // Animate fade-up elements
       document.addEventListener('DOMContentLoaded', () => {
-        const fadeElements = document.querySelectorAll('.fade-up');
+        // Hero elements - animate immediately (no scroll trigger)
+        const heroSection = document.querySelector('section');
+        const heroFadeElements = heroSection?.querySelectorAll('.fade-up');
 
-        fadeElements.forEach((el, i) => {
+        heroFadeElements?.forEach((el, i) => {
+          gsap.fromTo(el,
+            { opacity: 0, y: 30 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+              delay: i * 0.08,
+              ease: 'power2.out'
+            }
+          );
+        });
+
+        // Rest of page - scroll triggered (skip first section)
+        const otherFadeElements = document.querySelectorAll('section:not(:first-of-type) .fade-up');
+
+        otherFadeElements.forEach((el) => {
           gsap.fromTo(el,
             { opacity: 0, y: 30 },
             {
               opacity: 1,
               y: 0,
               duration: 0.6,
-              delay: i * 0.1,
               ease: 'power2.out',
               scrollTrigger: {
                 trigger: el,
-                start: 'top 85%',
+                start: 'top 95%',
                 toggleActions: 'play none none none'
               }
             }
@@ -66,7 +83,7 @@ const { title, description = "AI-powered systems that scale your business" } = A
               ease: 'power2.out',
               scrollTrigger: {
                 trigger: card,
-                start: 'top 85%',
+                start: 'top 95%',
                 toggleActions: 'play none none none'
               }
             }
