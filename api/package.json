@@ -1,6 +1,0 @@
-{
-  "type": "module",
-  "dependencies": {
-    "@notionhq/client": "^2.2.0"
-  }
-}

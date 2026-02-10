@@ -1,16 +1,18 @@
-import { Client } from "@notionhq/client";
 import crypto from "crypto";
 
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
 const CRM_DB_ID = "f7cabf3f-1aac-4b87-89e2-91a5431bd03d";
-const WEBHOOK_SECRET = process.env.CAL_WEBHOOK_SECRET;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
-  // Require webhook secret — reject all requests if not configured
-  if (!WEBHOOK_SECRET) {
-    console.error("CAL_WEBHOOK_SECRET not configured");
+  const WEBHOOK_SECRET = process.env.CAL_WEBHOOK_SECRET;
+  const NOTION_KEY = process.env.NOTION_API_KEY;
+
+  if (!WEBHOOK_SECRET || !NOTION_KEY) {
+    console.error("Missing env vars:", {
+      hasWebhookSecret: !!WEBHOOK_SECRET,
+      hasNotionKey: !!NOTION_KEY,
+    });
     return res.status(500).json({ error: "Server misconfigured" });
   }
 
@@ -21,7 +23,10 @@ export default async function handler(req, res) {
     .createHmac("sha256", WEBHOOK_SECRET)
     .update(body)
     .digest("hex");
-  if (!signature || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+  if (
+    !signature ||
+    !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+  ) {
     return res.status(401).json({ error: "Invalid signature" });
   }
 
@@ -33,39 +38,44 @@ export default async function handler(req, res) {
   const attendee = payload.attendees?.[0] || {};
   const responses = payload.responses || {};
 
-  // Build notes from "how they found us" + additional notes
   const howFound = responses.how_found?.value || "";
   const additionalNotes = responses.notes?.value || "";
   const notesParts = [];
   if (howFound) notesParts.push(`Found us: ${howFound}`);
   if (additionalNotes) notesParts.push(additionalNotes);
   const notes = notesParts.join("\n");
-
-  // Extract domain/website
   const domain = responses.domain?.value || "";
 
   try {
-    await notion.pages.create({
-      parent: { database_id: CRM_DB_ID },
-      properties: {
-        Name: {
-          title: [{ text: { content: attendee.name || "Unknown" } }],
-        },
-        Email: { email: attendee.email || null },
-        Company: {
-          rich_text: [{ text: { content: "" } }],
-        },
-        domain: { url: domain || null },
-        Source: { select: { name: "Inbound" } },
-        Status: { select: { name: "New Lead" } },
-        "First Contacted": {
-          date: { start: new Date().toISOString().split("T")[0] },
-        },
-        Notes: {
-          rich_text: [{ text: { content: notes } }],
-        },
+    const response = await fetch("https://api.notion.com/v1/pages", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${NOTION_KEY}`,
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        parent: { database_id: CRM_DB_ID },
+        properties: {
+          Name: { title: [{ text: { content: attendee.name || "Unknown" } }] },
+          Email: { email: attendee.email || null },
+          Company: { rich_text: [{ text: { content: "" } }] },
+          domain: { url: domain || null },
+          Source: { select: { name: "Inbound" } },
+          Status: { select: { name: "New Lead" } },
+          "First Contacted": {
+            date: { start: new Date().toISOString().split("T")[0] },
+          },
+          Notes: { rich_text: [{ text: { content: notes } }] },
+        },
+      }),
     });
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error("Notion API error:", err);
+      return res.status(500).json({ error: "Failed to create CRM entry" });
+    }
 
     return res.status(200).json({ ok: true });
   } catch (err) {
