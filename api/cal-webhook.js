@@ -7,6 +7,7 @@ export default async function handler(req, res) {
 
   const WEBHOOK_SECRET = process.env.CAL_WEBHOOK_SECRET;
   const NOTION_KEY = process.env.NOTION_API_KEY;
+  const SLACK_URL = process.env.SLACK_WEBHOOK_URL;
 
   if (!WEBHOOK_SECRET || !NOTION_KEY) {
     console.error("Missing env vars:", {
@@ -36,50 +37,149 @@ export default async function handler(req, res) {
   }
 
   const attendee = payload.attendees?.[0] || {};
-  const responses = payload.responses || {};
+  const attendeeName = attendee.name || "Unknown";
+  const attendeeEmail = attendee.email || "";
+  const startTime = payload.startTime || "";
+  const location = payload.location || "";
 
-  const howFound = responses.how_found?.value || "";
-  const additionalNotes = responses.notes?.value || "";
-  const notesParts = [];
-  if (howFound) notesParts.push(`Found us: ${howFound}`);
-  if (additionalNotes) notesParts.push(additionalNotes);
-  const notes = notesParts.join("\n");
-  const domain = responses.domain?.value || "";
+  if (!attendeeEmail) {
+    console.error("No attendee email in Cal.com booking");
+    return res.status(200).json({ skipped: true, reason: "no_email" });
+  }
 
   try {
-    const response = await fetch("https://api.notion.com/v1/pages", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${NOTION_KEY}`,
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        parent: { database_id: CRM_DB_ID },
-        properties: {
-          Name: { title: [{ text: { content: attendee.name || "Unknown" } }] },
-          Email: { email: attendee.email || null },
-          Company: { rich_text: [{ text: { content: "" } }] },
-          domain: { url: domain || null },
-          Source: { select: { name: "Inbound" } },
-          Status: { select: { name: "New Lead" } },
-          "First Contacted": {
-            date: { start: new Date().toISOString().split("T")[0] },
-          },
-          Notes: { rich_text: [{ text: { content: notes } }] },
-        },
-      }),
-    });
+    // Search CRM for existing contact by email
+    const existing = await searchCrmByEmail(NOTION_KEY, attendeeEmail);
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("Notion API error:", err);
-      return res.status(500).json({ error: "Failed to create CRM entry" });
+    if (existing) {
+      // Update existing entry to "Meeting Booked" — only if currently "New Lead"
+      const currentStatus = existing.properties?.Status?.select?.name || "";
+      if (currentStatus === "New Lead") {
+        await updateNotionPage(NOTION_KEY, existing.id, {
+          Status: { select: { name: "Meeting Booked" } },
+        });
+      }
+    } else {
+      // Fallback: create new entry (direct Cal.com booking that bypassed Tally)
+      await createNotionPage(NOTION_KEY, {
+        Name: { title: [{ text: { content: attendeeName } }] },
+        Email: { email: attendeeEmail },
+        Company: { rich_text: [{ text: { content: "" } }] },
+        Source: { select: { name: "Inbound" } },
+        Status: { select: { name: "Meeting Booked" } },
+        "First Contacted": {
+          date: { start: new Date().toISOString().split("T")[0] },
+        },
+      });
+    }
+
+    // Slack notification
+    if (SLACK_URL) {
+      let when = "";
+      if (startTime) {
+        try {
+          when = new Date(startTime).toLocaleString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            timeZone: "America/Los_Angeles",
+          });
+        } catch {
+          when = startTime;
+        }
+      }
+      const msg = [
+        "Meeting Booked",
+        `*${attendeeName}* (${attendeeEmail})`,
+        when ? `When: ${when} PT` : null,
+        location ? `Where: ${location}` : null,
+        existing ? null : "(new contact — bypassed Tally)",
+      ].filter(Boolean).join("\n");
+      await postSlack(SLACK_URL, msg);
     }
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    console.error("Notion API error:", err.message);
-    return res.status(500).json({ error: "Failed to create CRM entry" });
+    console.error("Cal webhook error:", err.message);
+    return res.status(500).json({ error: "Failed to process booking" });
+  }
+}
+
+// --- Helpers ---
+
+async function searchCrmByEmail(notionKey, email) {
+  const response = await fetch(
+    `https://api.notion.com/v1/databases/${CRM_DB_ID}/query`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${notionKey}`,
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        filter: { property: "Email", email: { equals: email } },
+        page_size: 1,
+      }),
+    }
+  );
+  if (!response.ok) {
+    console.error("Notion search error:", await response.text());
+    return null;
+  }
+  const data = await response.json();
+  return data.results?.[0] || null;
+}
+
+async function createNotionPage(notionKey, properties) {
+  const response = await fetch("https://api.notion.com/v1/pages", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${notionKey}`,
+      "Notion-Version": "2022-06-28",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      parent: { database_id: CRM_DB_ID },
+      properties,
+    }),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    console.error("Notion create error:", err);
+    throw new Error(`Notion create failed: ${err}`);
+  }
+  return response.json();
+}
+
+async function updateNotionPage(notionKey, pageId, properties) {
+  const response = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${notionKey}`,
+      "Notion-Version": "2022-06-28",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ properties }),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    console.error("Notion update error:", err);
+    throw new Error(`Notion update failed: ${err}`);
+  }
+  return response.json();
+}
+
+async function postSlack(webhookUrl, text) {
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+  } catch (err) {
+    console.error("Slack notification failed:", err.message);
   }
 }
